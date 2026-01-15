@@ -20,5 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "FireFlow"
-include(":app")
 include(":lib")
