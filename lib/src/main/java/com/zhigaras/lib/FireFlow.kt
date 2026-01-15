@@ -1,9 +1,10 @@
 package com.zhigaras.lib
 
 import com.google.firebase.database.GenericTypeIndicator
+import com.zhigaras.lib.model.ParseResult
 import kotlinx.coroutines.flow.Flow
 
-interface CloudService {
+interface FireFlow {
     
     suspend fun postWithIdGenerating(obj: Any?, vararg children: String): String
     
@@ -13,17 +14,15 @@ interface CloudService {
 
     fun post(obj: Any?, vararg children: String)
     
-    fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<T>
-    
-    fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String): Flow<List<T>>
-    
-    fun addItemToList(item: String, vararg children: String)
-    
-    fun removeListItem(itemId: String, vararg children: String)
-    
+    fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<ParseResult<T>>
+
+//    fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String): Flow<List<T>>
+//
+//    fun addItemToList(item: String, vararg children: String)
+//
+//    fun removeListItem(itemId: String, vararg children: String)
+
     companion object {
-        const val USERS_PATH = "Users"
-        const val TOPICS_PATH = "Topics"
-        const val SIGNALING_PATH = "Signaling"
+        fun create(dbProvider: DatabaseProvider): FireFlow = FireFlowImpl(dbProvider)
     }
 }

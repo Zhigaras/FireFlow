@@ -7,8 +7,7 @@ interface DatabaseProvider {
     
     fun provide(): DatabaseReference
     
-    class Base : DatabaseProvider {
-
+    class Default : DatabaseProvider {
         override fun provide(): DatabaseReference {
             return FirebaseDatabase.getInstance().reference
         }
