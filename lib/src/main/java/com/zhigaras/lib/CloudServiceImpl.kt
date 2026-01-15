@@ -1,4 +1,4 @@
-package com.zhigaras.fireflow
+package com.zhigaras.lib
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot

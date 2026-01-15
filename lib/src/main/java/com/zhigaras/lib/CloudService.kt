@@ -1,4 +1,4 @@
-package com.zhigaras.fireflow
+package com.zhigaras.lib
 
 import com.google.firebase.database.GenericTypeIndicator
 import kotlinx.coroutines.flow.Flow
