@@ -14,10 +14,10 @@ publishing {
             }
 
             pom {
-                name = "Adapter delegate"
-                description = "Easy recycler view delegates and payloads"
-                url = "https://github.com/Zhigaras/AdapterDelegate"
-                inceptionYear = "2025"
+                name = "FireFlow"
+                description = "Library for Firebase Realtime Database easy usage"
+                url = "https://github.com/Zhigaras/FireFlow"
+                inceptionYear = "2026"
                 licenses {
                     license {
                         name = "Apache-2.0"
@@ -31,9 +31,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:https://github.com/zhigaras/AdapterDelegate.git"
-                    developerConnection = "scm:git:ssh://github.com/zhigaras/AdapterDelegate.git"
-                    url = "http://github.com/zhigaras/AdapterDelegate"
+                    connection = "scm:git:https://github.com/zhigaras/FireFlow.git"
+                    developerConnection = "scm:git:ssh://github.com/zhigaras/FireFlow.git"
+                    url = "http://github.com/zhigaras/FireFlow"
                 }
             }
         }
