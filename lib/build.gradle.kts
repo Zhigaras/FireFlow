@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+apply(from = rootProject.file("gradle/publishing.gradle"))
+
 android {
     namespace = "com.zhigaras.lib"
     compileSdk {
@@ -38,3 +40,4 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
 }
+

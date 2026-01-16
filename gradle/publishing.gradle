@@ -1,0 +1,67 @@
+apply plugin: "maven-publish"
+apply plugin: "org.jreleaser"
+
+publishing {
+    mkdir("${layout.projectDirectory}\\build\\jreleaser")
+    mkdir("${layout.projectDirectory}\\build\\staging-deploy")
+    publications {
+        release(MavenPublication) {
+            groupId = "io.github.zhigaras"
+            artifactId = project.name
+
+            afterEvaluate {
+                from(components["release"])
+            }
+
+            pom {
+                name = "Adapter delegate"
+                description = "Easy recycler view delegates and payloads"
+                url = "https://github.com/Zhigaras/AdapterDelegate"
+                inceptionYear = "2025"
+                licenses {
+                    license {
+                        name = "Apache-2.0"
+                        url = "https://spdx.org/licenses/Apache-2.0.html"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "zhigaras"
+                        name = "Zhigaras Ilya"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/zhigaras/AdapterDelegate.git"
+                    developerConnection = "scm:git:ssh://github.com/zhigaras/AdapterDelegate.git"
+                    url = "http://github.com/zhigaras/AdapterDelegate"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            setUrl(layout.buildDirectory.dir("staging-deploy"))
+        }
+    }
+}
+
+jreleaser {
+    configFile = rootProject.file(".jreleaser/config.toml")
+    gitRootSearch = true
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral.create("sonatype") {
+                active = 'ALWAYS'
+                url = "https://central.sonatype.com/api/v1/publisher"
+                stagingRepository("build/staging-deploy")
+                applyMavenCentralRules = false
+                sign = true
+            }
+        }
+    }
+}
