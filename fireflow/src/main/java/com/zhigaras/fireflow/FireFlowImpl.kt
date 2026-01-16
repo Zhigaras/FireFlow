@@ -1,11 +1,11 @@
-package com.zhigaras.lib
+package com.zhigaras.fireflow
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
-import com.zhigaras.lib.model.ParseResult
+import com.zhigaras.fireflow.model.ParseResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

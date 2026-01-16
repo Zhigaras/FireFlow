@@ -1,7 +1,7 @@
-package com.zhigaras.lib
+package com.zhigaras.fireflow
 
 import com.google.firebase.database.GenericTypeIndicator
-import com.zhigaras.lib.model.ParseResult
+import com.zhigaras.fireflow.model.ParseResult
 import kotlinx.coroutines.flow.Flow
 
 interface FireFlow {

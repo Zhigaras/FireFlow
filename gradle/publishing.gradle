@@ -7,7 +7,7 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = "io.github.zhigaras"
-            artifactId = project.name
+            artifactId = "fireflow"
 
             afterEvaluate {
                 from(components["release"])
@@ -47,7 +47,9 @@ publishing {
 }
 
 jreleaser {
-    configFile = rootProject.file(".jreleaser/config.toml")
+    environment {
+        variables = rootProject.file(".jreleaser/config.toml")
+    }
     gitRootSearch = true
     signing {
         active = 'ALWAYS'

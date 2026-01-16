@@ -1,4 +1,4 @@
-package com.zhigaras.lib
+package com.zhigaras.fireflow
 
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
