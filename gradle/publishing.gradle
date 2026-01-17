@@ -2,12 +2,10 @@ apply plugin: "maven-publish"
 apply plugin: "org.jreleaser"
 
 publishing {
-    mkdir("${layout.projectDirectory}\\build\\jreleaser")
-    mkdir("${layout.projectDirectory}\\build\\staging-deploy")
     publications {
         release(MavenPublication) {
             groupId = "io.github.zhigaras"
-            artifactId = "fireflow"
+            artifactId = project.name
 
             afterEvaluate {
                 from(components["release"])
@@ -41,7 +39,8 @@ publishing {
 
     repositories {
         maven {
-            setUrl(layout.buildDirectory.dir("staging-deploy"))
+            name "staging"
+            url layout.buildDirectory.dir("staging-deploy")
         }
     }
 }
@@ -66,4 +65,22 @@ jreleaser {
             }
         }
     }
+}
+
+def cleanStaging = tasks.register("cleanStaging", Delete) {
+    mkdir layout.buildDirectory.dir('jreleaser')
+    delete layout.buildDirectory.dir('staging-deploy')
+}
+
+tasks.register("fullCustomPublish") {
+    group 'publishing'
+    description 'Cleans staging directory, builds artefacts, calls jreleaserFullRelease'
+
+    def buildTask = tasks.named('publishReleasePublicationToStagingRepository').get()
+    def publishTask = tasks.named('jreleaserFullRelease').get()
+
+    dependsOn cleanStaging, buildTask, publishTask
+
+    buildTask.configure { mustRunAfter cleanStaging }
+    publishTask.configure { mustRunAfter buildTask }
 }

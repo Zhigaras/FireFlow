@@ -5,7 +5,7 @@ plugins {
 
 apply(from = rootProject.file("gradle/publishing.gradle"))
 
-version = "0.0.2"
+version = "0.0.6"
 
 android {
     namespace = "com.zhigaras.fireflow"
