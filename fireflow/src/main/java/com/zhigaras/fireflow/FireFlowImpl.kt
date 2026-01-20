@@ -5,10 +5,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
-import com.zhigaras.fireflow.model.ParseResult
+import com.zhigaras.fireflow.mapper.FireFlowExceptionMapper
+import com.zhigaras.fireflow.model.FireFlowException
+import com.zhigaras.fireflow.model.Data
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.retry
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -16,6 +20,7 @@ import kotlin.coroutines.suspendCoroutine
 internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
 
     private val reference = databaseProvider.provide()
+    private val exceptionMapper = FireFlowExceptionMapper()
 
     override suspend fun postWithIdGenerating(obj: Any?, vararg children: String): String {
         return suspendCoroutine { cont ->
@@ -42,10 +47,14 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         vararg children: String
     ) = suspendCoroutine { cont ->
         makeReference(*children).get().addOnSuccessListener { snapshot ->
-            snapshot.getMethod()?.let { cont.resume(it) }
-                ?: cont.resumeWithException(IllegalStateException("Problem with deserialization"))
+            try {
+                snapshot.getMethod()?.let { cont.resume(it) }
+                    ?: cont.resumeWithException(IllegalStateException("Have not found any data"))
+            } catch (e: Exception) {
+                cont.resumeWithException(IllegalStateException("Deserialization failed $e"))
+            }
         }.addOnFailureListener {
-            cont.resumeWithException(IllegalStateException("Problem with data"))
+            cont.resumeWithException(IllegalStateException("Operation failed, reason $it"))
         }.addOnCanceledListener {
             cont.resumeWithException(IllegalStateException("Canceled"))
         }
@@ -55,21 +64,29 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         makeReference(*children).setValue(obj)
     }
 
-    override fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<ParseResult<T>> =
+    override fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<Data<T>> =
         callbackFlow {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    snapshot.getValue(clazz)?.let { trySend(ParseResult.Success(it)) }
-                        ?: trySend(ParseResult.Error(snapshot.value.toString()))
+                    try {
+                        snapshot.getValue(clazz)
+                            ?.let { trySend(Data.Success(it)) }
+                            ?: trySend(Data.Error(snapshot.value.toString()))
+                    } catch (e: Exception) {
+                        close(IllegalStateException("Deserialization failed $e"))
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    close(IllegalStateException(error.message))
+                    close(exceptionMapper.mapFromDatabaseError(error.code))
                 }
             }
             val ref = makeReference(*children)
             ref.addValueEventListener(listener)
             awaitClose { ref.removeEventListener(listener) }
+        }.retry {
+            delay(RETRY_SUBSCRIBE_DELAY)
+            it is FireFlowException.NonFatal
         }
 
 
@@ -107,5 +124,9 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         var ref = reference
         children.forEach { ref = ref.child(it) }
         return ref
+    }
+
+    private companion object {
+        const val RETRY_SUBSCRIBE_DELAY = 3000L
     }
 }

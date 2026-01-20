@@ -1,7 +1,7 @@
 package com.zhigaras.fireflow
 
 import com.google.firebase.database.GenericTypeIndicator
-import com.zhigaras.fireflow.model.ParseResult
+import com.zhigaras.fireflow.model.Data
 import kotlinx.coroutines.flow.Flow
 
 interface FireFlow {
@@ -14,7 +14,7 @@ interface FireFlow {
 
     fun post(obj: Any?, vararg children: String)
     
-    fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<ParseResult<T>>
+    fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<Data<T>>
 
 //    fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String): Flow<List<T>>
 //
