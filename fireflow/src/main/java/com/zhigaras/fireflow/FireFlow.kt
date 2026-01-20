@@ -1,6 +1,5 @@
 package com.zhigaras.fireflow
 
-import com.google.firebase.database.GenericTypeIndicator
 import com.zhigaras.fireflow.model.Data
 import kotlinx.coroutines.flow.Flow
 
@@ -32,11 +31,10 @@ interface FireFlow {
      * Performs a single fetch (get) for complex generic types (e.g., List or Map).
      *
      * @param T The type of the expected object.
-     * @param clazz A [GenericTypeIndicator] to preserve generic type information during deserialization.
      * @param children The path segments to the data location.
      * @return An instance of type [T] or null if data is missing.
      */
-    suspend fun <T : Any> getDataSnapshot(clazz: GenericTypeIndicator<T>, vararg children: String): T?
+    suspend fun <T : Any> getDataSnapshot(vararg children: String): T?
 
     /**
      * Overwrites or sets data at the specified path.

@@ -41,9 +41,8 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
     ): T? = getDataSnapshotImpl({ getValue(clazz) }, *children)
 
     override suspend fun <T : Any> getDataSnapshot(
-        clazz: GenericTypeIndicator<T>,
         vararg children: String
-    ): T? = getDataSnapshotImpl({ getValue(clazz) }, *children)
+    ): T? = getDataSnapshotImpl({ getValue(object : GenericTypeIndicator<T>() {}) }, *children)
 
     private suspend fun <T : Any> getDataSnapshotImpl(
         getMethod: DataSnapshot.() -> T?,
