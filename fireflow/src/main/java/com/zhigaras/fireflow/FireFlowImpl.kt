@@ -8,6 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import com.zhigaras.fireflow.mapper.FireFlowExceptionMapper
 import com.zhigaras.fireflow.model.FireFlowException
 import com.zhigaras.fireflow.model.Data
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -66,31 +67,46 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         makeReference(*children).setValue(obj).await()
     }
 
-    override fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<Data<T>> =
-        callbackFlow {
-            val listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    try {
-                        snapshot.getValue(clazz)
-                            ?.let { trySend(Data.Parsed(it)) }
-                            ?: trySend(Data.Raw(snapshot.value.toString()))
-                    } catch (e: Exception) {
-                        close(e)
-                    }
-                }
+    override fun <T : Any> subscribe(
+        clazz: Class<T>,
+        vararg children: String
+    ): Flow<Data<T>> = subscribeImpl(*children) { snapshot ->
+        snapshot.getValue(clazz)
+            ?.let { trySend(Data.Parsed(it)) }
+            ?: trySend(Data.Raw(snapshot.value.toString()))
+    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    close(exceptionMapper.mapFromDatabaseError(error.code))
+    override fun <T : Any> subscribeIgnoreUnparsed(
+        clazz: Class<T>,
+        vararg children: String
+    ): Flow<T> = subscribeImpl(*children) { snapshot ->
+        snapshot.getValue(clazz)?.let(::trySend)
+    }
+
+    private inline fun <T : Any> subscribeImpl(
+        vararg children: String,
+        crossinline handleData: SendChannel<T>.(DataSnapshot) -> Unit
+    ) = callbackFlow {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    handleData(snapshot)
+                } catch (e: Exception) {
+                    close(e)
                 }
             }
-            val ref = makeReference(*children)
-            ref.addValueEventListener(listener)
-            awaitClose { ref.removeEventListener(listener) }
-        }.retry {
-            delay(RETRY_SUBSCRIBE_DELAY)
-            it is FireFlowException.NonFatal
-        }
 
+            override fun onCancelled(error: DatabaseError) {
+                close(exceptionMapper.mapFromDatabaseError(error.code))
+            }
+        }
+        val ref = makeReference(*children)
+        ref.addValueEventListener(listener)
+        awaitClose { ref.removeEventListener(listener) }
+    }.retry {
+        delay(RETRY_SUBSCRIBE_DELAY)
+        it is FireFlowException.NonFatal
+    }
 
 //    override fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String) =
 //        callbackFlow<List<T>> {
