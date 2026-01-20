@@ -8,9 +8,9 @@ interface FireFlow {
     
     suspend fun postWithIdGenerating(obj: Any?, vararg children: String): String
     
-    suspend fun <T : Any> getDataSnapshot(clazz: Class<T>, vararg children: String): T
+    suspend fun <T : Any> getDataSnapshot(clazz: Class<T>, vararg children: String): T?
 
-    suspend fun <T : Any> getDataSnapshot(clazz: GenericTypeIndicator<T>, vararg children: String): T
+    suspend fun <T : Any> getDataSnapshot(clazz: GenericTypeIndicator<T>, vararg children: String): T?
 
     fun post(obj: Any?, vararg children: String)
     

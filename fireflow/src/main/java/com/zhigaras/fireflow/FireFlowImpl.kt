@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.retry
+import java.lang.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -25,9 +26,9 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
     override suspend fun postWithIdGenerating(obj: Any?, vararg children: String): String {
         return suspendCoroutine { cont ->
             makeReference(*children).push().setValue(obj) { error, ref ->
-                error?.let { cont.resumeWithException(IllegalStateException(error.message)) }
+                error?.let { cont.resumeWithException(error.toException()) }
                     ?: ref.key?.let { key -> cont.resume(key) }
-                    ?: cont.resumeWithException(IllegalStateException("Generated id is null"))
+                    ?: cont.resumeWithException(RuntimeException("Generated id is null"))
             }
         }
     }
@@ -35,12 +36,12 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
     override suspend fun <T : Any> getDataSnapshot(
         clazz: Class<T>,
         vararg children: String
-    ): T = getDataSnapshotImpl({ getValue(clazz) }, *children)
+    ): T? = getDataSnapshotImpl({ getValue(clazz) }, *children)
 
     override suspend fun <T : Any> getDataSnapshot(
         clazz: GenericTypeIndicator<T>,
         vararg children: String
-    ): T = getDataSnapshotImpl({ getValue(clazz) }, *children)
+    ): T? = getDataSnapshotImpl({ getValue(clazz) }, *children)
 
     private suspend fun <T : Any> getDataSnapshotImpl(
         getMethod: DataSnapshot.() -> T?,
@@ -49,14 +50,14 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         makeReference(*children).get().addOnSuccessListener { snapshot ->
             try {
                 snapshot.getMethod()?.let { cont.resume(it) }
-                    ?: cont.resumeWithException(IllegalStateException("Have not found any data"))
+                    ?: cont.resume(null)
             } catch (e: Exception) {
-                cont.resumeWithException(IllegalStateException("Deserialization failed $e"))
+                cont.resumeWithException(e)
             }
         }.addOnFailureListener {
-            cont.resumeWithException(IllegalStateException("Operation failed, reason $it"))
+            cont.resumeWithException(it)
         }.addOnCanceledListener {
-            cont.resumeWithException(IllegalStateException("Canceled"))
+            cont.resumeWithException(RuntimeException("Canceled"))
         }
     }
 
@@ -70,10 +71,10 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     try {
                         snapshot.getValue(clazz)
-                            ?.let { trySend(Data.Success(it)) }
-                            ?: trySend(Data.Error(snapshot.value.toString()))
+                            ?.let { trySend(Data.Parsed(it)) }
+                            ?: trySend(Data.Raw(snapshot.value.toString()))
                     } catch (e: Exception) {
-                        close(IllegalStateException("Deserialization failed $e"))
+                        close(e)
                     }
                 }
 
