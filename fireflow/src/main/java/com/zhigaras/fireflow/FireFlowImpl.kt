@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.tasks.await
 import java.lang.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -61,8 +62,8 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         }
     }
 
-    override fun post(obj: Any?, vararg children: String) {
-        makeReference(*children).setValue(obj)
+    override suspend fun post(obj: Any?, vararg children: String) {
+        makeReference(*children).setValue(obj).await()
     }
 
     override fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<Data<T>> =

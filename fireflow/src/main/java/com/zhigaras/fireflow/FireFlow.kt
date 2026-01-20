@@ -12,7 +12,7 @@ interface FireFlow {
 
     suspend fun <T : Any> getDataSnapshot(clazz: GenericTypeIndicator<T>, vararg children: String): T?
 
-    fun post(obj: Any?, vararg children: String)
+    suspend fun post(obj: Any?, vararg children: String)
     
     fun <T : Any> subscribe(clazz: Class<T>, vararg children: String): Flow<Data<T>>
 
