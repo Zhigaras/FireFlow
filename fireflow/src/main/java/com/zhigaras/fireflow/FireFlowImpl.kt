@@ -82,6 +82,19 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         snapshot.getValue(clazz)?.let(::trySend)
     }
 
+    override fun <T : Any> subscribeToCollection(
+        clazz: Class<T>,
+        vararg children: String
+    ): Flow<Map<String, T>> = subscribeImpl(*children) { snapshot ->
+        val result = snapshot.children.mapNotNull { children ->
+            val key = children.key
+            val value = children.getValue(clazz)
+            if (key != null && value != null) key to value
+            else null
+        }.toMap()
+        trySend(result)
+    }
+
     private inline fun <T : Any> subscribeImpl(
         vararg children: String,
         crossinline handleData: SendChannel<T>.(DataSnapshot) -> Unit
@@ -107,26 +120,6 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         it is FireFlowException.NonFatal
     }
 
-//    override fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String) =
-//        callbackFlow<List<T>> {
-//            val listener = object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    val list = mutableListOf<T>()
-//                    for (child in snapshot.children) {
-//                        child.getValue(clazz)?.let { list.add(it) }
-//                    }
-//                    trySend(list)
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    throw IllegalStateException(error.message)
-//                }
-//            }
-//            val ref = makeReference(*children)
-//            ref.addValueEventListener(listener)
-//            awaitClose { ref.removeEventListener(listener) }
-//        }
-//
 //    override fun addItemToList(item: String, vararg children: String) {
 //        val ref = makeReference(*children)
 //        ref.updateChildren(mapOf(item to "waiting")) // TODO: replace "waiting" away from here

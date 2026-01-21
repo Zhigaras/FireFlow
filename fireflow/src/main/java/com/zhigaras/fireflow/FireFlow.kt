@@ -65,8 +65,8 @@ interface FireFlow {
      */
     fun <T : Any> subscribeIgnoreUnparsed(clazz: Class<T>, vararg children: String): Flow<T>
 
-//    fun <T : Any> subscribeToList(clazz: Class<T>, vararg children: String): Flow<List<T>>
-//
+    fun <T: Any> subscribeToCollection(clazz: Class<T>, vararg children: String): Flow<Map<String, T>>
+
 //    fun addItemToList(item: String, vararg children: String)
 //
 //    fun removeListItem(itemId: String, vararg children: String)
