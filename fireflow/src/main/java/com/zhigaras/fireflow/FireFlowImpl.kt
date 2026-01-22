@@ -66,6 +66,27 @@ internal class FireFlowImpl(databaseProvider: DatabaseProvider) : FireFlow {
         makeReference(*children).setValue(obj).await()
     }
 
+    override suspend fun <T : Any> update(
+        clazz: Class<T>,
+        vararg children: String,
+        transform: (T) -> T
+    ) {
+        val current = getDataSnapshot(clazz, *children)
+            ?: throw IllegalStateException("Nothing to update. Save something first")
+        val updated = transform(current)
+        post(updated, *children)
+    }
+
+    override suspend fun <T : Any> update(
+        vararg children: String,
+        transform: (T) -> T
+    ) {
+        val current = getDataSnapshot<T>(*children)
+            ?: throw IllegalStateException("Nothing to update. Save something first")
+        val updated = transform(current)
+        post(updated, *children)
+    }
+
     override fun <T : Any> subscribe(
         clazz: Class<T>,
         vararg children: String
