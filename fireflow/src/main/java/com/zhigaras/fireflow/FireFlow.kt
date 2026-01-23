@@ -45,7 +45,6 @@ interface FireFlow {
     suspend fun post(obj: Any?, vararg children: String)
 
     suspend fun <T: Any> update(clazz: Class<T>, vararg children: String, transform: (T) -> T)
-    suspend fun <T: Any> update(vararg children: String, transform: (T) -> T)
 
     /**
      * Subscribes to real-time data updates at the specified path.
