@@ -6,6 +6,10 @@ import com.zhigaras.fireflow.version2.typed.TypedNode
 import com.zhigaras.fireflow.version2.typed.CollectionNode
 import com.zhigaras.fireflow.version2.typed.ObjectNode
 import kotlinx.coroutines.tasks.await
+import java.lang.RuntimeException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 abstract class BaseNode(
     protected val ref: DatabaseReference,
@@ -22,5 +26,17 @@ abstract class BaseNode(
 
     override fun <T : Any> asTypedMap(clazz: Class<T>): TypedNode<Map<String, T>> {
         return CollectionNode(ref, clazz)
+    }
+
+    override suspend fun post(obj: Any?) {
+        ref.setValue(obj).await()
+    }
+
+    override suspend fun postWithIdGenerating(obj: Any): String = suspendCoroutine { cont ->
+        ref.push().setValue(obj) { error, ref ->
+            error?.let { cont.resumeWithException(error.toException()) }
+                ?: ref.key?.let { key -> cont.resume(key) }
+                ?: cont.resumeWithException(RuntimeException("Generated id is null"))
+        }
     }
 }

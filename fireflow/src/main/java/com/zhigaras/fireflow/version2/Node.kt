@@ -7,6 +7,8 @@ interface Node {
     fun child(path: String): Node
     fun <T : Any> asTyped(clazz: Class<T>): TypedNode<T>
     fun <T : Any> asTypedMap(clazz: Class<T>): TypedNode<Map<String, T>>
+    suspend fun post(obj: Any?)
+    suspend fun postWithIdGenerating(obj: Any): String
 
     companion object {
         fun root(): Node = NodeImpl(FirebaseDatabase.getInstance().reference)
