@@ -1,0 +1,11 @@
+package com.zhigaras.fireflow.version2
+
+import com.google.firebase.database.DatabaseReference
+
+class NodeImpl(
+    ref: DatabaseReference,
+) : BaseNode(ref), Node {
+    override fun child(path: String): Node {
+        return NodeImpl(ref.child(path))
+    }
+}
