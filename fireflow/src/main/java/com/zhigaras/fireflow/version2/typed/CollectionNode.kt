@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseReference
 class CollectionNode<T : Any>(
     ref: DatabaseReference,
     private val clazz: Class<T>,
-) : BaseTypedNode<Map<String, T>>(ref) {
+) : BaseTypedNode<Map<String, T>>(ref), TypedNode.Collection<T> {
 
     override fun DataSnapshot.map(): Map<String, T> {
         return children.mapNotNull { child ->

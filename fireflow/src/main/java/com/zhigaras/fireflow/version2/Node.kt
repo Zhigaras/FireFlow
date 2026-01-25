@@ -5,8 +5,8 @@ import com.zhigaras.fireflow.version2.typed.TypedNode
 
 interface Node {
     fun child(path: String): Node
-    fun <T : Any> asTyped(clazz: Class<T>): TypedNode<T>
-    fun <T : Any> asTypedMap(clazz: Class<T>): TypedNode<Map<String, T>>
+    fun <T : Any> asTyped(clazz: Class<T>): TypedNode.Object<T>
+    fun <T : Any> asTypedCollectionOf(clazz: Class<T>): TypedNode.Collection<T>
     suspend fun post(obj: Any?)
     suspend fun postWithIdGenerating(obj: Any): String
 

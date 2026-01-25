@@ -20,11 +20,11 @@ abstract class BaseNode(
         return NodeImpl(ref.child(path))
     }
 
-    override fun <T : Any> asTyped(clazz: Class<T>): TypedNode<T> {
+    override fun <T : Any> asTyped(clazz: Class<T>): TypedNode.Object<T> {
         return ObjectNode(ref, clazz)
     }
 
-    override fun <T : Any> asTypedMap(clazz: Class<T>): TypedNode<Map<String, T>> {
+    override fun <T : Any> asTypedCollectionOf(clazz: Class<T>): TypedNode.Collection<T> {
         return CollectionNode(ref, clazz)
     }
 
