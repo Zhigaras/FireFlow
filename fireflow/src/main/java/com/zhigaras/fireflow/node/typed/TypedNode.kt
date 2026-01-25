@@ -1,6 +1,6 @@
-package com.zhigaras.fireflow.version2.typed
+package com.zhigaras.fireflow.node.typed
 
-import com.zhigaras.fireflow.version2.Node
+import com.zhigaras.fireflow.node.Node
 import kotlinx.coroutines.flow.Flow
 
 interface TypedNode<T : Any> : Node {

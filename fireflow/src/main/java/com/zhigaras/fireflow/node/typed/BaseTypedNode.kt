@@ -1,4 +1,4 @@
-package com.zhigaras.fireflow.version2.typed
+package com.zhigaras.fireflow.node.typed
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.zhigaras.fireflow.mapper.FireFlowExceptionMapper
 import com.zhigaras.fireflow.model.FireFlowException
-import com.zhigaras.fireflow.version2.BaseNode
+import com.zhigaras.fireflow.node.BaseNode
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.zhigaras.fireflow.version2.typed
+package com.zhigaras.fireflow.node.typed
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference

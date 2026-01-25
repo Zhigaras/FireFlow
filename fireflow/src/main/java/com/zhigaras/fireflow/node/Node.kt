@@ -1,7 +1,7 @@
-package com.zhigaras.fireflow.version2
+package com.zhigaras.fireflow.node
 
-import com.google.firebase.database.FirebaseDatabase
-import com.zhigaras.fireflow.version2.typed.TypedNode
+import com.zhigaras.fireflow.DatabaseProvider
+import com.zhigaras.fireflow.node.typed.TypedNode
 
 interface Node {
     fun child(path: String): Node
@@ -11,6 +11,7 @@ interface Node {
     suspend fun postWithIdGenerating(obj: Any): String
 
     companion object {
-        fun root(): Node = NodeImpl(FirebaseDatabase.getInstance().reference)
+        fun root(provider: DatabaseProvider = DatabaseProvider.Default()): Node =
+            NodeImpl(provider.provide())
     }
 }

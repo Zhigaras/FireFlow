@@ -1,10 +1,10 @@
-package com.zhigaras.fireflow.version2
+package com.zhigaras.fireflow.node
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
-import com.zhigaras.fireflow.version2.typed.TypedNode
-import com.zhigaras.fireflow.version2.typed.CollectionNode
-import com.zhigaras.fireflow.version2.typed.ObjectNode
+import com.zhigaras.fireflow.node.typed.TypedNode
+import com.zhigaras.fireflow.node.typed.CollectionNode
+import com.zhigaras.fireflow.node.typed.ObjectNode
 import kotlinx.coroutines.tasks.await
 import java.lang.RuntimeException
 import kotlin.coroutines.resume
