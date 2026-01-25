@@ -11,7 +11,7 @@ interface Node {
     suspend fun postWithIdGenerating(obj: Any): String
 
     companion object {
-        fun root(provider: DatabaseProvider = DatabaseProvider.Default()): Node =
+        fun root(provider: DatabaseProvider = DatabaseProvider.Default()): RootNode =
             NodeImpl(provider.provide())
     }
 }
