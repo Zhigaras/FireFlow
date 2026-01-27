@@ -28,7 +28,7 @@ abstract class BaseNode(
         return CollectionNode(ref, clazz)
     }
 
-    override suspend fun post(obj: Any?) {
+    override suspend fun set(obj: Any?) {
         ref.setValue(obj).await()
     }
 

@@ -15,6 +15,6 @@ class ObjectNode<T : Any>(
     override suspend fun update(transform: (T) -> T) {
         val current = fetchSnapshot().map() ?: clazz.getDeclaredConstructor().newInstance()
         val updated = transform(current)
-        post(updated)
+        set(updated)
     }
 }
