@@ -9,7 +9,6 @@ A lightweight Kotlin wrapper for the **Firebase Realtime Database**. It simplifi
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Dependency Injection](#dependency-injection)
-- [Error Handling & Retries](#error-handling)
 
 ---
 
@@ -103,10 +102,6 @@ val appModule = module {
     single { UserRepository(get()) }
 }
 ```
-## Error Handling
-- FireFlow maps Firebase DatabaseErrors into FireFlowException.
-- Observe Retries: The observe() flow automatically retries on transient network failures using a predefined delay.
-- Strict Mapping: If data cannot be parsed into your class, the flow will close with a mapping exception, preventing silent failures.
 
 ---
 
