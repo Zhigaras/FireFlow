@@ -1,6 +1,6 @@
 # FireFlow
 
-A lightweight, Kotlin-first wrapper for the **Firebase Realtime Database**. It simplifies database interactions by transforming raw references into type-safe **Coroutines** and **Flows**.
+A lightweight Kotlin wrapper for the **Firebase Realtime Database**. It simplifies database interactions by transforming raw references into type-safe **Coroutines** and **Flows**.
 
 ---
 
@@ -54,7 +54,7 @@ Navigate through nodes using the child() method and perform one-shot operations.
 val usersNode = root.child("users")
 
 // Write data
-usersNode.post(User(name = "Alex"))
+usersNode.set(User(name = "Alex"))
 
 // Write with auto-generated ID
 val newId = usersNode.postWithIdGenerating(User(name = "Bob"))
@@ -104,7 +104,7 @@ val appModule = module {
 }
 ```
 ## Error Handling
-FireFlow maps Firebase DatabaseErrors into FireFlowException.
+- FireFlow maps Firebase DatabaseErrors into FireFlowException.
 - Observe Retries: The observe() flow automatically retries on transient network failures using a predefined delay.
 - Strict Mapping: If data cannot be parsed into your class, the flow will close with a mapping exception, preventing silent failures.
 
