@@ -1,7 +1,7 @@
 ![firebase-logo](./img/Firebase.png)
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.zhigaras/fireflow/1.1.0)](https://mvnrepository.com/artifact/io.github.zhigaras/fireflow/1.1.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.zhigaras/fireflow/1.1.1)](https://mvnrepository.com/artifact/io.github.zhigaras/fireflow/1.1.1)
 [![Apache 2 License](https://img.shields.io/github/license/Zhigaras/FireFlow)](https://github.com/Zhigaras/FireFlow/blob/main/LICENSE.txt)
 
 # FireFlow
